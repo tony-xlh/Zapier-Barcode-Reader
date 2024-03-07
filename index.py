@@ -8,11 +8,21 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 data = {}
 
+@app.route('/auth', methods=['POST','GET'])
+@cross_origin()
+def auth():
+    response = {}
+    response["success"] = True
+    json_string = json.dumps(response)
+    resp = Response(json_string)
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
+
 @app.route('/code', methods=['POST','GET'])
 @cross_origin()
 def code():
     global data
-    response = {}
+    new_barcode_items = []
     if request.method == 'POST':
         uuid = request.args.get('uuid')
         barcode = request.args.get('barcode')
@@ -26,16 +36,16 @@ def code():
         uuid = request.args.get('uuid')
         if uuid in data:
             barcodes = data[uuid]
-            new_list = []
+            id = 1
             for barcode in barcodes:
-                new_list.append(barcode)
-            response["barcodes"] = new_list
+                item = {}
+                item["id"] = id
+                item["barcode"] = barcode
+                new_barcode_items.append(item)
+                id = id + 1
             barcodes.clear()
-        else:
-            response["barcodes"] = []
     print(data)
-    response["success"] = True
-    json_string = json.dumps(response)
+    json_string = json.dumps(new_barcode_items)
     resp = Response(json_string)
     resp.headers['Content-Type'] = 'application/json'
     return resp
