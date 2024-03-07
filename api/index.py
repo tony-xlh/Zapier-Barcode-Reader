@@ -43,8 +43,13 @@ def code():
                 item["barcode"] = barcode
                 new_barcode_items.append(item)
                 id = id + 1
-            barcodes.clear()
+
+            keep = request.args.get('keep')
+            print(keep)
+            if keep == None or keep == False:
+                barcodes.clear()
     print(data)
+    print(new_barcode_items)
     json_string = json.dumps(new_barcode_items)
     resp = Response(json_string)
     resp.headers['Content-Type'] = 'application/json'
