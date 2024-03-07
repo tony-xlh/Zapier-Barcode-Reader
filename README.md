@@ -18,6 +18,7 @@ You can deploy the server on your own and create an integration using the API.
 
    Arguments:
 
+   * `keep` (optional): pass this argument to avoid clearing the barcodes
    * `barcode` (optional): string of scanned barcode
    * `uuid`: unique ID of a device. Barcodes will stored according to the UUID.
 
