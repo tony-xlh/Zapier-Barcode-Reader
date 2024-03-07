@@ -10,6 +10,7 @@ We can scan barcodes and trigger zaps.
 We can scan an ISBN barcode of a book, get its info and send it to notion.
 
 
+![image](https://github.com/tony-xlh/Zapier-Barcode-Reader/assets/112376616/dca9e921-c1b0-4101-b08e-5a7786a1bda1)
 
 
 JavaScript used:
