@@ -108,7 +108,11 @@
                 stopScanning();
             })
 
-            document.getElementById("status").innerText = "";
+            document.getElementById("sendBtn").addEventListener("click",function(){
+                send();
+            })
+
+            updateStatus("");
             loadUUID();
         }
     
@@ -140,6 +144,32 @@
         var uuid = temp_url.toString(); // blob:https://xxx.com/b250d159-e1b6-4a87-9002-885d90033be3
         URL.revokeObjectURL(temp_url);
         return uuid.substr(uuid.lastIndexOf("/") + 1);
+    }
+
+    function updateStatus(msg){
+        document.getElementById("status").innerText = msg;
+    }
+
+    function send(){
+        let uuid = document.getElementById("uuid").value;
+        let barcode = document.getElementById("barcode").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', "/code?uuid="+uuid+"&barcode="+barcode);
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === 4){
+                console.log(xhr.responseText);
+                document.getElementById("barcode").value = "";
+                updateStatus("");
+                alert("Sent");
+            }
+        }
+        xhr.onerror = function(){
+            console.log("error");
+            updateStatus("");
+            alert("failed");
+        }
+        xhr.send();
+        updateStatus("Sending...");
     }
     </script>
 </body>
