@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scan Barcode to Zapier</title>
+    <style>
+        h2 {
+            text-align: center;
+        }
+        #app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #cameraViewContainer{
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top:0;
+            left:0;
+            display: none;
+        }
+
+        #stopScanBtn {
+            position: fixed;
+            top:0;
+            right:0;
+            z-index: 999;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .buttons button {
+            width: 45%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h2>Scan Barcode to Zapier</h2>
+        <div>
+            <label>
+                Barcode:
+                <input id="barcode" type="text"/>
+            </label>
+            <div class="buttons">
+                <button id="startScanBtn">Start Scan</button>
+                <button id="sendBtn">Send to Zapier</button>
+            </div>
+            <div id="cameraViewContainer">
+                <button id="stopScanBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-barcode-reader@10.0.21/dist/dbr.bundle.js"></script>
+    <script>
+        let cameraEnhancer;
+        let router;
+        let view;
+        window.onload = async function(){
+            Dynamsoft.License.LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
+            router = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
+
+            view = await Dynamsoft.DCE.CameraView.createInstance();
+            cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(view);
+            document.getElementById("cameraViewContainer").append(view.getUIElement());
+            router.setInput(cameraEnhancer);
+
+            router.addResultReceiver({ onDecodedBarcodesReceived: (result) => {
+                console.log(result);
+                if (result.barcodeResultItems.length > 0) {
+                    document.getElementById("barcode").value = result.barcodeResultItems[0].text;
+                    stopScanning();
+                }
+            }});
+
+            let filter = new Dynamsoft.Utility.MultiFrameResultCrossFilter();
+            filter.enableResultCrossVerification(
+                Dynamsoft.Core.EnumCapturedResultItemType.CRIT_BARCODE, true
+            );
+            filter.enableResultDeduplication(
+                Dynamsoft.Core.EnumCapturedResultItemType.CRIT_BARCODE, true
+            );
+            await router.addResultFilter(filter);
+
+            document.getElementById("startScanBtn").addEventListener("click",function(){
+                startScanning();
+            })
+
+            document.getElementById("stopScanBtn").addEventListener("click",function(){
+                stopScanning();
+            })
+        }
+    
+    async function startScanning(){
+        document.getElementById("cameraViewContainer").style.display = "block";
+        await cameraEnhancer.open();
+        await router.startCapturing("ReadSingleBarcode");
+    }
+
+    function stopScanning(){
+        document.getElementById("cameraViewContainer").style.display = "none";
+        router.stopCapturing();
+        cameraEnhancer.close(); 
+    }
+    </script>
+</body>
+</html>
