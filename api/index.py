@@ -44,9 +44,9 @@ def code():
                 new_barcode_items.append(item)
                 id = id + 1
 
-            keep = request.args.get('keep')
-            print(keep)
-            if keep == None or keep == False:
+            clear = request.args.get('clear')
+            print(clear)
+            if clear != None:
                 barcodes.clear()
     print(data)
     print(new_barcode_items)
