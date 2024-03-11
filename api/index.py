@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file, Response
 from flask_cors import CORS, cross_origin
 import json
+import time
 
 app = Flask(__name__, static_url_path='/', static_folder='./')
 cors = CORS(app)
@@ -31,19 +32,16 @@ def code():
             barcodes = data[uuid]
         else:
             data[uuid] = barcodes
-        barcodes.append(barcode)    
+        item = {}
+        item["id"] = int(time.time()*1000)
+        item["barcode"] = barcode
+        barcodes.append(item)    
     else:
         uuid = request.args.get('uuid')
         if uuid in data:
             barcodes = data[uuid]
-            id = 1
-            for barcode in barcodes:
-                item = {}
-                item["id"] = id
-                item["barcode"] = barcode
+            for item in barcodes:
                 new_barcode_items.append(item)
-                id = id + 1
-
             clear = request.args.get('clear')
             print(clear)
             if clear != None:
